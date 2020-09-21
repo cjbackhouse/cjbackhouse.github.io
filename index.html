@@ -1,1 +1,314 @@
-<h1>Test</h1>
+<style>
+@keyframes swing_up {
+  0% {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  100% {
+    transform: translate(-50%, -50%) rotate(90deg);
+  }
+}
+
+@keyframes swing_up_left {
+  0% {
+    transform: translate(-50%, -50%) rotate(0deg) scaleX(-1);
+  }
+  100% {
+    transform: translate(-50%, -50%) rotate(-90deg) scaleX(-1);
+  }
+}
+
+@keyframes swing_dn {
+  0% {
+    transform: translate(-50%, -50%) rotate(90deg);
+  }
+  100% {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+}
+
+@keyframes swing_dn_left {
+  0% {
+    transform: translate(-50%, -50%) rotate(-90deg) scaleX(-1);
+  }
+  100% {
+    transform: translate(-50%, -50%) rotate(0deg) scaleX(-1);
+  }
+}
+</style>
+
+<!-- <button id="go">Go!</id> -->
+
+<select><option>Plain Bob</option></select>
+<select name="stage" id="stage" onchange="pick_stage()">
+  <option value="6" selected>Minor</option>
+  <option value="8">Major</option>
+  <option value="10">Royal</option>
+  <option value="12">Maximus</option>
+</select>
+
+<button id="stop" onclick="stop=true; bell();" style="display:none">Stand!</button>
+<br>
+Peal speed: <span id="peal_time">-</span>
+
+<script>
+  var hand_src = 'https://ringingroom.com/static/images/h-handstroke.png';
+  var back_src = 'https://ringingroom.com/static/images/h-backstroke.png';
+  var audio_src = 'https://ringingroom.com/static/audio/hand.mp3';
+
+  var inits = [17, 29, 32, 35, 38, 41, 44, 47, 50, 20, 23, 26];
+
+  class Bell {
+    constructor(i, N){
+      this.hand = true;
+      this.init = inits[inits.length-N+i];
+      this.left = (i > 0 && i <= N/2);
+
+      this.audio = new Audio(audio_src);
+      var _this = this;
+      // Pause after 2sec
+      this.audio.addEventListener('timeupdate',
+      function(event){
+        if(this.currentTime > _this.init+2){
+          this.pause();
+          this.currentTime = _this.init;
+        }
+      });
+
+      this.img = new Image();
+      this.img.src = hand_src;
+      document.body.append(this.img);
+
+      this.img.style.position = 'fixed';
+      this.img.style.transform = 'translate(-50%, -50%)';
+      if(this.left) this.img.style.transform += 'scaleX(-1)';
+      var ang = (.5+2*(i-.5)/N)*Math.PI;
+      this.img.style.left = 50+35*Math.cos(ang)+'%';
+      this.img.style.top  = 50+35*Math.sin(ang)+'%';
+      this.img.style.width = '15%';
+
+      this.label = document.createElement('div');
+      this.label.innerHTML = '<b>'+(i+1)+'</b>';
+      this.label.style.position = 'fixed';
+      this.label.style.transform = 'translate(-50%, -50%)';
+      this.label.style.left = 50+45*Math.cos(ang)+'%';
+      this.label.style.top  = 50+45*Math.sin(ang)+'%';
+      document.body.append(this.label);
+    }
+
+    destroy()
+    {
+      this.audio.remove();
+      this.img.remove();
+      this.label.remove();
+    }
+
+    pull(){
+      this.hand = !this.hand;
+//      if(this.hand) this.img.src = hand_src; else this.img.src = back_src;
+      this.audio.pause();
+      this.audio.currentTime = this.init;
+      this.audio.play();
+
+      if(this.hand){
+        if(this.left){
+          this.img.style.animation = 'swing_dn_left .1s forwards ease-in-out';
+        }
+        else{
+          this.img.style.animation = 'swing_dn .1s forwards ease-in-out';
+        }
+      }
+      else{
+        if(this.left){
+          this.img.style.animation = 'swing_up_left .1s forwards ease-in-out';
+        }
+        else{
+          this.img.style.animation = 'swing_up .1s forwards ease-in-out';
+        }
+      }
+    }
+  }
+
+  class Method
+  {
+    constructor(notat, N){
+      this.notat = [[]];
+      for(var i = 0; i < notat.length; ++i){
+        if(notat[i] == 'x'){
+          if(this.notat[this.notat.length-1].length > 0) this.notat.push([]);
+          this.notat.push([]); // cross = none fixed + new row
+        }
+        else if(notat[i] == '.'){
+          this.notat.push([]); // start a new row
+        }
+        else{
+          this.notat[this.notat.length-1] += notat[i]-1;
+        }
+      }
+      if(this.notat[this.notat.length-1].length == 0 && notat[notat.length-1] != 'x') this.notat.pop();
+
+      this.rowNo = 0;
+      this.currow = [];
+      for(var i = 0; i < N; ++i) this.currow[i] = i;
+    }
+
+    swapPair(i){
+      var k = this.currow[i];
+      this.currow[i] = this.currow[i+1];
+      this.currow[i+1] = k;
+    }
+
+    nextRow(){
+      var prev = -1;
+      for(var i = 0; i < this.notat[this.rowNo].length; ++i){
+        for(var j = prev+1; j+1 < this.notat[this.rowNo][i]; j += 2) this.swapPair(j);
+        prev = Math.floor(this.notat[this.rowNo][i]);
+      }
+      for(var j = prev+1; j+1 < this.currow.length; j += 2) this.swapPair(j);
+
+      ++this.rowNo;
+      this.rowNo %= this.notat.length;
+
+      return this.currow;
+    }
+  }
+
+  var phunt = new Method('x16', 6);
+  var pbob = new Method('x16x16x16x16x16x12', 6);
+  var york = new Method('x38x14x58x16x12x38x14x78x14x38x12x16x58x14x38x12', 8);
+
+//  for(var i = 0; i < 24; ++i) console.log(phunt.nextRow());
+//  for(var i = 0; i < 32; ++i) console.log(york.nextRow());
+
+  var bells = [];
+  for(var i = 0; i < 6; ++i) bells[i] = new Bell(i, 6);
+
+  var hand = true;
+  var updown = true;
+
+  var row = [0, 1, 2, 3, 4, 5];
+  rowNo = 0;
+  bellNo = 0;
+
+  function swap(i, j)
+  {
+    var k = row[i];
+    row[i] = row[j];
+    row[j] = k;
+  }
+
+  var prevNow = -1;
+
+  var spacing = 250;
+
+  function bell()
+  {
+    var now = performance.now();
+    var dnow = prevNow > 0 ? now-prevNow : -1;
+    prevNow = now;
+
+    if(true){//row[bellNo] <= 1){
+      if(hand && bellNo == 0) dnow /= 1.8; // undo handstroke gap
+      if(dnow > 1.5*spacing) dnow = 1.5*spacing; // truncate outliers
+      if(dnow > 0) spacing = 2./3*spacing + 1./3*dnow;
+
+      if(spacing < 100) spacing = 150; // very fast, something went wrong?
+      if(spacing > 600) spacing = 600; // very slow, something went wrong?
+
+      var mins = Math.floor((spacing/1000.*(bells.length+.8)*5040)/60.+.5);
+      var hrs = Math.floor(mins/60);
+      mins = Math.floor(mins-60*hrs);
+      document.getElementById('peal_time').innerHTML = hrs+'h'+mins+'m';
+    }
+
+    if(row[bellNo] > 1) bells[row[bellNo]].pull();
+
+    bellNo += 1;
+    bellNo %= bells.length;
+    if(bellNo == 0){
+      // New row
+      hand = !hand;
+      if(rowNo % (bells.length*2) == bells.length*2-1){ // lead end
+        for(var i = 2; i+1 < row.length; i += 2){
+          swap(i, i+1);
+        }
+        rowNo += 1;
+      }
+      else{
+        if(hand){
+          updown = false;
+          for(var i = 0; i+1 < row.length; i += 2){
+            swap(i, i+1);
+          }
+          rowNo += 1;
+        }
+        else{
+          if(!updown){
+            for(var i = 1; i+1 < row.length; i += 2){
+              swap(i, i+1);
+            }
+            rowNo += 1;
+          }
+        }
+      }
+      console.log(row);
+    }
+
+    var dt = spacing;
+    // Handstroke gap
+    if(bellNo == 0 && hand) dt *= 1.8;
+
+    if(!stop){
+      if(row[bellNo] > 1)
+        window.setTimeout(function(){bell();}, dt);
+    }
+    else{
+      for(var i = 0; i < bells.length; ++i) if(!bells[i].hand) bells[i].pull();
+      stop = false;
+      updown = true;
+      once = true;
+      hand = true;
+      row = [];
+      for(var i = 0; i < bells.length; ++i) row[i] = i;
+      rowNo = 0;
+      bellNo = 0;
+      prevNow = -1;
+      spacing = 300;
+      document.getElementById('stop').style.display = 'none';
+    }
+  }
+
+  <!-- var but = document.getElementById('go'); -->
+  <!-- but.onclick = function(){ -->
+  <!--   but.style.display = 'none'; -->
+  <!--   bell(0); -->
+  <!-- } -->
+
+  var once = true;
+  var stop = false;
+
+  document.onkeydown = function(event){
+    if(event.key == 'j'){
+       bells[0].pull();
+       bell();
+       if(once){
+         once = false;
+         document.getElementById('stop').style.display = 'inline';
+       }
+    }
+    if(event.key == 'f'){
+      bells[1].pull();
+      bell();
+    }
+  }
+
+  function pick_stage(event){
+    stop = true;
+    bell();
+    var N = document.getElementById('stage').value;
+    for(var i in bells) bells[i].destroy();
+    bells = [];
+    for(var i = 0; i < N; ++i) bells[i] = new Bell(i, N);
+    row = [];
+    for(var i = 0; i < bells.length; ++i) row[i] = i;
+  }
+</script>
