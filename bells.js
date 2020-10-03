@@ -1,6 +1,18 @@
 import Bell from "./bell.js";
 import Method from "./method.js";
 
+// Attach UI
+document.getElementById('method6' ).addEventListener('change', pick_method);
+document.getElementById('method8' ).addEventListener('change', pick_method);
+document.getElementById('method10').addEventListener('change', pick_method);
+document.getElementById('method12').addEventListener('change', pick_method);
+
+document.getElementById('stage').addEventListener('change', pick_stage);
+document.getElementById('pair').addEventListener('change', pick_pair);
+document.getElementById('firstrow').addEventListener('change', pick_first_row);
+
+document.getElementById('stop').addEventListener('click', stop);
+
 function bellAsString(i){
   if(i == 9) return '0';
   if(i == 10) return 'E';
@@ -36,7 +48,7 @@ function setAtBack()
   bellNo = 0;
 }
 
-var method, bells, row, hand, updown, bellNo;
+var method, bells, row, hand, updown, bellNo, timer;
 
 // Initialize everything to defaults
 pick_stage();
@@ -84,40 +96,19 @@ function bell()
   // Handstroke gap
   if(bellNo == 0 && hand) dt *= 1.8;
 
-  if(!stop){
-    if(row[bellNo] > 1)
-      window.setTimeout(function(){bell();}, dt);
-  }
-  else{
-//      setAtHand();
-    pick_stage();
-    pick_method();
-    pick_pair();
-    pick_first_row();
-//      stop = false;
-//      updown = true;
-//      once = true;
-//      hand = true;
-//      row = Rounds(bells.length);
-    bellNo = 0;
-    prevNow = -1;
-    spacing = 300;
-    document.getElementById('stop').style.display = 'none';
-    stop = false;
-  }
+  if(row[bellNo] > 1) timer = window.setTimeout(function(){bell();}, dt);
 }
 
 var once = true;
-var stop = false;
 
 document.onkeydown = function(event){
   if(event.key == 'j'){
     bells[0].pull();
-     bell();
-     if(once){
-       once = false;
-       document.getElementById('stop').style.display = 'inline';
-     }
+    bell();
+    if(once){
+      once = false;
+      document.getElementById('stop').style.display = 'inline';
+    }
   }
   if(event.key == 'f'){
     bells[1].pull();
@@ -125,7 +116,33 @@ document.onkeydown = function(event){
   }
 }
 
+var stopping = false;
+
+function stop(){
+  if(stopping) return;
+  stopping = true;
+
+  if(timer){
+    window.clearTimeout(timer);
+    timer = undefined;
+  }
+
+  pick_stage();
+  pick_method();
+  pick_pair();
+  pick_first_row();
+  bellNo = 0;
+  prevNow = -1;
+  spacing = 300;
+  document.getElementById('stop').style.display = 'none';
+  once = true;
+
+  stopping = false;
+}
+
 function pick_stage(){
+  stop();
+
   var N = document.getElementById('stage').value;
   console.log('Picking', N, 'bells');
 
@@ -147,14 +164,11 @@ function pick_stage(){
     var m = document.getElementById('method'+i);
     if(i == N) m.style.display = 'inline'; else m.style.display = 'none';
   }
-
-  if(!stop){
-    stop = true;
-    bell();
-  }
 }
 
 function pick_method(event){
+  stop();
+
   var N = document.getElementById('stage').value;
   var notat = document.getElementById('method'+N).value;
   console.log('Setting method to', notat, 'on', N);
@@ -179,21 +193,20 @@ function pick_method(event){
   }
 
   method = new Method(notat, N);
-
-  if(!stop){
-    stop = true;
-    bell();
-  }
 }
 
 function pick_pair()
 {
+  stop();
+
   var pair = document.getElementById('pair').value;
   console.log('Picked pair', pair);
 }
 
 function pick_first_row()
 {
+  stop();
+
   var N = document.getElementById('firstrow').value;
   method.reset();
   for(var i = 0; i < N; ++i) row = method.nextRow();

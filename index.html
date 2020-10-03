@@ -9,40 +9,40 @@
 </head>
 <body>
 
-<select name="method6" id="method6" onchange="pick_method()">
+<select id="method6">
   <option value="x16">Plain Hunt</option>
   <option value="x16x16x16x16x16x12" selected="true">Plain Bob</option>
 </select>
-<select name="method8" id="method8" onchange="pick_method()">
+<select id="method8">
   <option value="x18">Plain Hunt</option>
   <option value="x18x18x18x18x18x18x18x12" selected="true">Plain Bob</option>
   <option value="x38x14x58x16x12x38x14x78x14x38x12x16x58x14x38x12">Yorkshire</option>
 </select>
-<select name="method10" id="method10" onchange="pick_method()">
+<select id="method10">
   <option value="x10">Plain Hunt</option>
   <option value="x10x10x10x10x10x10x10x10x10x12" selected="true">Plain Bob</option>
 </select>
-<select name="method12" id="method12" onchange="pick_method()">
+<select id="method12">
   <option value="x1T">Plain Hunt</option>
 </select>
 
-<select name="stage" id="stage" onchange="pick_stage()">
+<select id="stage">
   <option value="6" selected="true">Minor</option>
   <option value="8">Major</option>
   <option value="10">Royal</option>
   <option value="12">Maximus</option>
 </select>
 on
-<select name="pair" id="pair" onchange="pick_pair()">
+<select id="pair">
 </select>
 starting at
-<select name="firstrow" id="firstrow" onchange="pick_first_row()">
+<select id="firstrow">
   <option value="0" selected="true">Rounds</option>
 </select>
 <br>
 Peal speed: <span id="peal_time">auto</span>
 <br>
-<button id="stop" onclick="stop=true; bell();" style="display:none">Stand!</button>
+<button id="stop" style="display:none">Stand!</button>
 
 <!-- page elements aren't loaded in time if we put it in <head> -->
 <script src="bells.js" type="module"></script>

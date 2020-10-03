@@ -40,7 +40,6 @@ export default class Method
    }
 
   reset(){
-    console.log('reset!');
     this.currow = Rounds(this.currow.length);
     console.log(this.currow);
   }
