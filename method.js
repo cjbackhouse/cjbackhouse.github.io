@@ -41,6 +41,7 @@ export default class Method
 
   reset(){
     this.currow = Rounds(this.currow.length);
+    this.rowNo = 0;
   }
 
   nextRow(){
