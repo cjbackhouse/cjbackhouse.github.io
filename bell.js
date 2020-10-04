@@ -23,10 +23,15 @@ export default class Bell {
 
     this.img = new Image();
     this.img.src = hand_src;
+    this.img.style.opacity = '0';
     document.body.append(this.img);
 
-    // TODO - figure out how to do this with transition
-    this.img.style.animation = 'grow 2s ease-in-out';
+    // Do this in a callback so that the zero opacity above has a chance to
+    // take hold first. No idea if there is a better way.
+    window.requestIdleCallback( () => {
+      this.img.style.opacity = '1';
+      this.img.style.transition = 'opacity 2s ease-in-out';
+    }, {'timeout': 0});
 
     this.label = document.createElement('div');
     this.label.style.position = 'fixed';
@@ -56,7 +61,9 @@ export default class Bell {
 
   destroy(){
     this.img.style.opacity = '0';
-    this.img.style.transition = 'opacity 1s ease-in-out';
+    this.img.style.left = '50%';
+    this.img.style.top = '50%';
+    this.img.style.transition = 'opacity 1s ease-in-out, left 1s ease-in-out, top 1s ease-in-out';
     this.img.addEventListener('transitionend', () => { this.img.remove(); });
 
     this.audio.remove();
