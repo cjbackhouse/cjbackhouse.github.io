@@ -25,28 +25,41 @@ export default class Bell {
     this.img.src = hand_src;
     document.body.append(this.img);
 
+    // TODO - figure out how to do this with transition
+    this.img.style.animation = 'grow 1.5s';
+
+    this.label = document.createElement('div');
+    this.label.style.position = 'fixed';
+    this.label.style.transform = 'translate(-50%, -50%)';
+    document.body.append(this.label);
+
+    this.setPosition(i, N, first);
+  }
+
+  setPosition(i, N, first){
     this.img.style.position = 'fixed';
     this.img.style.transform = 'translate(-50%, -50%)';
     var ang = (.5+2*(i-first-.5)/N)*Math.PI;
     this.left = Math.cos(ang) < 0;
-    if(this.left) this.img.style.transform += 'scaleX(-1)';
+    if(this.left) this.img.style.transform += 'scaleX(-1)'; else this.img.style.transform += 'scaleX(+1)';
+
     this.img.style.left = 50+35*Math.cos(ang)+'%';
     this.img.style.top  = 50+35*Math.sin(ang)+'%';
     this.img.style.width = '15%';
 
-    this.label = document.createElement('div');
+    this.img.style.transition = 'left 1.5s, top 1.5s, transform 1.5s';
+
     this.label.innerHTML = '<b>'+(i+1)+'</b>';
-    this.label.style.position = 'fixed';
-    this.label.style.transform = 'translate(-50%, -50%)';
     this.label.style.left = 50+45*Math.cos(ang)+'%';
     this.label.style.top  = 50+45*Math.sin(ang)+'%';
-    document.body.append(this.label);
   }
 
-  destroy()
-  {
+  destroy(){
+    this.img.style.scale = '0%';
+    this.img.style.transition = 'scale 1.5s';
+    this.img.addEventListener('transitionend', () => { this.img.remove(); });
+
     this.audio.remove();
-    this.img.remove();
     this.label.remove();
   }
 
@@ -57,21 +70,11 @@ export default class Bell {
     this.audio.currentTime = this.init;
     this.audio.play();
 
-    if(this.hand){
-      if(this.left){
-        this.img.style.animation = 'swing_dn_left .1s forwards ease-in-out';
-      }
-      else{
-        this.img.style.animation = 'swing_dn .1s forwards ease-in-out';
-      }
-    }
-    else{
-      if(this.left){
-        this.img.style.animation = 'swing_up_left .1s forwards ease-in-out';
-      }
-      else{
-        this.img.style.animation = 'swing_up .1s forwards ease-in-out';
-      }
-    }
+    var t = 'translate(-50%, -50%)';
+    if(this.left) t += ' scaleX(-1)';
+    if(this.hand) t += ' rotate(0deg)'; else t += ' rotate(90deg)';
+
+    this.img.style.transform = t;
+    this.img.style.transition = 'transform .1.5s ease-in-out';
   }
 }

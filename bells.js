@@ -55,7 +55,7 @@ function setAtBack()
   bellNo = 0;
 }
 
-var method, bells, row, first, hand, updown, bellNo, timer;
+var method, bells = [], row, first, hand, updown, bellNo, timer;
 
 // Initialize everything to defaults
 pick_stage();
@@ -168,9 +168,17 @@ function pick_stage(){
   var N = document.getElementById('stage').value;
   console.log('Picking', N, 'bells');
 
-  for(var i in bells) bells[i].destroy();
-  bells = [];
-  for(var i = 0; i < N; ++i) bells[i] = new Bell(i, N, first);
+  while(bells.length > N){
+    bells[0].destroy();
+    bells.shift();
+  }
+
+  while(bells.length < N){
+    bells.unshift(new Bell(N-bells.length-1, N, first));
+  }
+
+  for(var i = 0; i < N; ++i) bells[i].setPosition(i, N, first);
+
   row = Rounds(N);
 
   var select = document.getElementById('pair');
@@ -196,9 +204,6 @@ function pick_method(event){
   var N = document.getElementById('stage').value;
   var notat = document.getElementById('method'+N).value;
   console.log('Setting method to', notat, 'on', N);
-  for(var i in bells) bells[i].destroy();
-  bells = [];
-  for(var i = 0; i < N; ++i) bells[i] = new Bell(i, N, first);
   row = Rounds(N);
   method = new Method(notat, N);
 
@@ -228,12 +233,12 @@ function pick_pair()
   var pair = document.getElementById('pair').value;
   console.log('Picked pair', pair);
 
+  var oldfirst = first;
   first = charAsBell(pair[0]);
 
-  for(var i in bells) bells[i].destroy();
-  bells = [];
-  var N = document.getElementById('stage').value;
-  for(var i = 0; i < N; ++i) bells[i] = new Bell(i, N, first);
+  if(first != oldfirst){
+    for(var i = 0; i < bells.length; ++i) bells[i].setPosition(i, bells.length, first);
+  }
 
   pick_first_row();
 }
