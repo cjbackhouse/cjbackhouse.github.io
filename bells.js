@@ -142,10 +142,6 @@ function stop(){
     timer = undefined;
   }
 
-  pick_stage();
-  pick_method();
-  pick_pair();
-  pick_first_row();
   bellNo = 0;
   prevNow = -1;
   spacing = 300;
@@ -179,6 +175,8 @@ function pick_stage(){
     var m = document.getElementById('method'+i);
     if(i == N) m.style.display = 'inline'; else m.style.display = 'none';
   }
+
+  pick_method(); // make sure method is appropriate
 }
 
 function pick_method(event){
@@ -208,6 +206,8 @@ function pick_method(event){
   }
 
   method = new Method(notat, N);
+
+  pick_pair(); // make sure pair are within range
 }
 
 function pick_pair()
@@ -216,6 +216,8 @@ function pick_pair()
 
   var pair = document.getElementById('pair').value;
   console.log('Picked pair', pair);
+
+  pick_first_row();
 }
 
 function pick_first_row()
