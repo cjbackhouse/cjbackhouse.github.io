@@ -75,6 +75,6 @@ export default class Bell {
     if(this.hand) t += ' rotate(0deg)'; else t += ' rotate(90deg)';
 
     this.img.style.transform = t;
-    this.img.style.transition = 'transform .1.5s ease-in-out';
+    this.img.style.transition = 'transform .1s ease-in-out';
   }
 }

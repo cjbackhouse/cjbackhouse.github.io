@@ -182,11 +182,18 @@ function pick_stage(){
   row = Rounds(N);
 
   var select = document.getElementById('pair');
-  select.options.length = 0;
-  for(var i = 0; i < N; i += 2){
+
+  while(select.options.length > N/2){
+    // Stay on the tenors rather than flipping back to trebles
+    if(select.selectedIndex == select.options.length-1) --select.selectedIndex;
+    select.remove(select.options.length-1);
+  }
+
+  while(select.options.length < N/2){
+    var n = select.options.length;
     var opt = document.createElement('option');
-    opt.text = bellAsString(i)+'-'+bellAsString(i+1);
-    opt.value = bellAsString(i)+bellAsString(i+1);
+    opt.text = bellAsString(n*2)+'-'+bellAsString(n*2+1);
+    opt.value = bellAsString(n*2)+bellAsString(n*2+1);
     select.add(opt);
   }
 
