@@ -20,6 +20,13 @@ function bellAsString(i){
   return ''+(i+1);
 }
 
+function charAsBell(c){
+    if(c == '0') return 9;
+    if(c == 'E') return 10;
+    if(c == 'T') return 11;
+    return Math.floor(c)-1;
+}
+
 function rowAsString(row){
   var ret = '';
   for(var i = 0; i < row.length; ++i) ret += bellAsString(row[i]);
@@ -48,7 +55,7 @@ function setAtBack()
   bellNo = 0;
 }
 
-var method, bells, row, hand, updown, bellNo, timer;
+var method, bells, row, first, hand, updown, bellNo, timer;
 
 // Initialize everything to defaults
 pick_stage();
@@ -159,7 +166,7 @@ function pick_stage(){
 
   for(var i in bells) bells[i].destroy();
   bells = [];
-  for(var i = 0; i < N; ++i) bells[i] = new Bell(i, N);
+  for(var i = 0; i < N; ++i) bells[i] = new Bell(i, N, first);
   row = Rounds(N);
 
   var select = document.getElementById('pair');
@@ -187,7 +194,7 @@ function pick_method(event){
   console.log('Setting method to', notat, 'on', N);
   for(var i in bells) bells[i].destroy();
   bells = [];
-  for(var i = 0; i < N; ++i) bells[i] = new Bell(i, N);
+  for(var i = 0; i < N; ++i) bells[i] = new Bell(i, N, first);
   row = Rounds(N);
   method = new Method(notat, N);
 
@@ -216,6 +223,13 @@ function pick_pair()
 
   var pair = document.getElementById('pair').value;
   console.log('Picked pair', pair);
+
+  first = charAsBell(pair[0]);
+
+  for(var i in bells) bells[i].destroy();
+  bells = [];
+  var N = document.getElementById('stage').value;
+  for(var i = 0; i < N; ++i) bells[i] = new Bell(i, N, first);
 
   pick_first_row();
 }

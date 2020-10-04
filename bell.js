@@ -6,10 +6,9 @@ const audio_src = 'https://ringingroom.com/static/audio/hand.mp3';
 const inits = [17, 29, 32, 35, 38, 41, 44, 47, 50, 20, 23, 26];
 
 export default class Bell {
-  constructor(i, N){
+  constructor(i, N, first){
     this.hand = true;
     this.init = inits[inits.length-N+i];
-    this.left = (i > 0 && i <= N/2);
 
     this.audio = new Audio(audio_src);
     var _this = this;
@@ -28,8 +27,9 @@ export default class Bell {
 
     this.img.style.position = 'fixed';
     this.img.style.transform = 'translate(-50%, -50%)';
+    var ang = (.5+2*(i-first-.5)/N)*Math.PI;
+    this.left = Math.cos(ang) < 0;
     if(this.left) this.img.style.transform += 'scaleX(-1)';
-    var ang = (.5+2*(i-.5)/N)*Math.PI;
     this.img.style.left = 50+35*Math.cos(ang)+'%';
     this.img.style.top  = 50+35*Math.sin(ang)+'%';
     this.img.style.width = '15%';
