@@ -73,21 +73,22 @@ function bell()
   var dnow = prevNow > 0 ? now-prevNow : -1;
   prevNow = now;
 
-  if(true){//row[bellNo] <= 1){
-    if(hand && bellNo == 0) dnow /= 1.8; // undo handstroke gap
-    if(dnow > 1.5*spacing) dnow = 1.5*spacing; // truncate outliers
-    if(dnow > 0) spacing = 2./3*spacing + 1./3*dnow;
+  // Update estimate of the desired speed
+  if(hand && bellNo == 0) dnow /= 1.8; // undo handstroke gap
+  if(dnow > 1.5*spacing) dnow = 1.5*spacing; // truncate outliers
+  if(dnow > 0) spacing = 2./3*spacing + 1./3*dnow;
 
-    if(spacing < 100) spacing = 150; // very fast, something went wrong?
-    if(spacing > 600) spacing = 600; // very slow, something went wrong?
+  if(spacing < 100) spacing = 150; // very fast, something went wrong?
+  if(spacing > 600) spacing = 600; // very slow, something went wrong?
 
-    var mins = Math.floor((spacing/1000.*(bells.length+.8)*5040)/60.+.5);
-    var hrs = Math.floor(mins/60);
-    mins = Math.floor(mins-60*hrs);
-    document.getElementById('peal_time').innerHTML = hrs+'h'+mins+'m';
-  }
+  // Update the peal time
+  var mins = Math.floor((spacing/1000.*(bells.length+.8)*5040)/60.+.5);
+  var hrs = Math.floor(mins/60);
+  mins = Math.floor(mins-60*hrs);
+  document.getElementById('peal_time').innerHTML = hrs+'h'+mins+'m';
 
-  if(row[bellNo] > 1) bells[row[bellNo]].pull();
+  // Not the user's bell. We need to ring it
+  if(row[bellNo] != first && row[bellNo] != first+1) bells[row[bellNo]].pull();
 
   bellNo += 1;
   bellNo %= bells.length;
@@ -99,28 +100,31 @@ function bell()
     console.log(rowAsString(row));
   }
 
-  var dt = spacing;
-  // Handstroke gap
-  if(bellNo == 0 && hand) dt *= 1.8;
+  // So long as it's not the user next
+  if(row[bellNo] != first && row[bellNo] != first+1){
+    var dt = spacing;
+    // Handstroke gap
+    if(bellNo == 0 && hand) dt *= 1.8;
 
-  if(row[bellNo] > 1) timer = window.setTimeout(bell, dt);
+    timer = window.setTimeout(bell, dt);
+  }
 }
 
 var once = true;
 
 function right()
 {
-  bells[0].pull();
-  bell();
+  if(!once || first == 0) bells[first].pull();
   if(once){
     once = false;
     document.getElementById('stop').style.display = 'inline';
   }
+  bell();
 }
 
 function left()
 {
-  bells[1].pull();
+  bells[first+1].pull();
   bell();
 }
 
@@ -240,7 +244,9 @@ function pick_first_row()
 
   var N = document.getElementById('firstrow').value;
   method.reset();
-  for(var i = 0; i < N; ++i) row = method.nextRow();
+  console.log('skip after reset', rowAsString(row));
+  for(var i = 0; i < N; ++i) method.nextRow();
+  row = method.curRow();
   console.log('Picked first row, skip', N, 'changes to', rowAsString(row));
   if(N == 0) setAtHand();
   else setAtBack();

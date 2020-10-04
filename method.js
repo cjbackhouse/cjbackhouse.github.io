@@ -44,6 +44,10 @@ export default class Method
     this.rowNo = 0;
   }
 
+  curRow(){
+    return this.currow;
+  }
+
   nextRow(){
     var prev = -1;
     for(var i = 0; i < this.notat[this.rowNo].length; ++i){
