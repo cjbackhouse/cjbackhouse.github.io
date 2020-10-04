@@ -96,24 +96,38 @@ function bell()
   // Handstroke gap
   if(bellNo == 0 && hand) dt *= 1.8;
 
-  if(row[bellNo] > 1) timer = window.setTimeout(function(){bell();}, dt);
+  if(row[bellNo] > 1) timer = window.setTimeout(bell, dt);
 }
 
 var once = true;
 
+function right()
+{
+  bells[0].pull();
+  bell();
+  if(once){
+    once = false;
+    document.getElementById('stop').style.display = 'inline';
+  }
+}
+
+function left()
+{
+  bells[1].pull();
+  bell();
+}
+
+document.getElementById('left').addEventListener('click', left);
+document.getElementById('right').addEventListener('click', right);
+// Activate for touch screens
+if('ontouchstart' in document.documentElement){
+  document.getElementById('left').style.display = 'inline';
+  document.getElementById('right').style.display = 'inline';
+}
+
 document.onkeydown = function(event){
-  if(event.key == 'j'){
-    bells[0].pull();
-    bell();
-    if(once){
-      once = false;
-      document.getElementById('stop').style.display = 'inline';
-    }
-  }
-  if(event.key == 'f'){
-    bells[1].pull();
-    bell();
-  }
+  if(event.key == 'j') right();
+  if(event.key == 'f') left();
 }
 
 var stopping = false;
