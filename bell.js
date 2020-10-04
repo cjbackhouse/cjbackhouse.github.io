@@ -26,7 +26,7 @@ export default class Bell {
     document.body.append(this.img);
 
     // TODO - figure out how to do this with transition
-    this.img.style.animation = 'grow 1.5s';
+    this.img.style.animation = 'grow 2s ease-in-out';
 
     this.label = document.createElement('div');
     this.label.style.position = 'fixed';
@@ -47,7 +47,7 @@ export default class Bell {
     this.img.style.top  = 50+35*Math.sin(ang)+'%';
     this.img.style.width = '15%';
 
-    this.img.style.transition = 'left 1.5s, top 1.5s, transform 1.5s';
+    this.img.style.transition = 'left 1.5s ease-in-out, top 1.5s ease-in-out, transform .5s';
 
     this.label.innerHTML = '<b>'+(i+1)+'</b>';
     this.label.style.left = 50+45*Math.cos(ang)+'%';
@@ -55,8 +55,8 @@ export default class Bell {
   }
 
   destroy(){
-    this.img.style.scale = '0%';
-    this.img.style.transition = 'scale 1.5s';
+    this.img.style.opacity = '0';
+    this.img.style.transition = 'opacity 1s ease-in-out';
     this.img.addEventListener('transitionend', () => { this.img.remove(); });
 
     this.audio.remove();
