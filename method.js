@@ -17,7 +17,7 @@ export default class Method
         this.notat.push([]); // start a new row
       }
       else{
-        this.notat[this.notat.length-1] += this.charToPlace(notat[i]);
+        this.notat[this.notat.length-1].push(this.charToPlace(notat[i]));
       }
     }
     if(this.notat[this.notat.length-1].length == 0 && notat[notat.length-1] != 'x') this.notat.pop();
@@ -41,7 +41,6 @@ export default class Method
 
   reset(){
     this.currow = Rounds(this.currow.length);
-    console.log(this.currow);
   }
 
   nextRow(){
