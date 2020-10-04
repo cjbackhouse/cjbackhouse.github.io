@@ -55,7 +55,7 @@ function setAtBack()
   bellNo = 0;
 }
 
-var method, bells = [], row, first, hand, updown, bellNo, timer;
+var method, bells = [], row, first = 0, hand, updown, bellNo, timer;
 
 // Initialize everything to defaults
 pick_stage();
