@@ -126,6 +126,7 @@ if('ontouchstart' in document.documentElement){
 }
 
 document.onkeydown = function(event){
+  if(event.shiftKey || event.ctrlKey || event.altKey) return;
   if(event.key == 'j') right();
   if(event.key == 'f') left();
 }
