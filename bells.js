@@ -124,7 +124,12 @@ function right()
 
 function left()
 {
-  bells[first+1].pull();
+  // Allow using either hand to trigger the AI to pull off
+  if(!once || first == 0) bells[first+1].pull();
+  if(once){
+    once = false;
+    document.getElementById('stop').style.display = 'inline';
+  }
   bell();
 }
 
