@@ -1,6 +1,5 @@
-const hand_src = 'https://ringingroom.com/static/images/h-handstroke.png';
-const back_src = 'https://ringingroom.com/static/images/h-backstroke.png';
-const audio_src = 'https://ringingroom.com/static/audio/hand.mp3';
+const hand_src = 'h-handstroke.png'; // Downloaded from https://ringingroom.com/static/images/h-handstroke.png' on 24/4/2021;
+const audio_src = 'hand.mp3'; // Downloaded from 'https://ringingroom.com/static/audio/hand.mp3' on 24/4/2021
 
 // Initial times of the bell audios
 const inits = [0, 24, 27, 30, 33, 39, 42, 45, 48, 3, 6, 9];
