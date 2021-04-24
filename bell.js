@@ -50,7 +50,7 @@ export default class Bell {
     requestAnimationFrame( () => {
 
       this.img.style.transform = 'translate(-50%, -50%)';
-      if(this.left) this.img.style.transform += 'scaleX(-1)'; else this.img.style.transform += 'scaleX(+1)';
+      if(this.left) this.img.style.transform += 'scaleX(+1)'; else this.img.style.transform += 'scaleX(-1)';
 
       this.img.style.left = 50+35*Math.cos(ang)+'%';
       this.img.style.top  = 50+35*Math.sin(ang)+'%';
@@ -86,8 +86,8 @@ export default class Bell {
     this.audio.play();
 
     var t = 'translate(-50%, -50%)';
-    if(this.left) t += ' scaleX(-1)';
-    if(this.hand) t += ' rotate(0deg)'; else t += ' rotate(90deg)';
+    if(this.left) t += ' scaleX(+1)'; else t += ' scaleX(-1)';
+    if(this.hand) t += ' rotate(0deg)'; else t += ' rotate(-90deg)';
 
     this.img.style.transform = t;
     this.img.style.transition = 'transform .1s ease-in-out';
