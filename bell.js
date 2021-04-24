@@ -3,7 +3,7 @@ const back_src = 'https://ringingroom.com/static/images/h-backstroke.png';
 const audio_src = 'https://ringingroom.com/static/audio/hand.mp3';
 
 // Initial times of the bell audios
-const inits = [17, 41, 44, 47, 50, 56, 59, 62, 65, 20, 23, 26];
+const inits = [0, 24, 27, 30, 33, 39, 42, 45, 48, 3, 6, 9];
 
 export default class Bell {
   constructor(i, N, first){
